@@ -1,5 +1,3 @@
 ﻿namespace Infrastructure;
 
-public static class AssemblyReference
-{
-}
+public static class AssemblyReference;

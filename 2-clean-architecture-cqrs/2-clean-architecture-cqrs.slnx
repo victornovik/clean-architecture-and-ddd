@@ -13,5 +13,4 @@
     <Project Path="Infrastructure/Infrastructure.csproj" />
     <Project Path="Presentation/Presentation.csproj" />
   </Folder>
-  <Folder Name="/test/" />
 </Solution>
