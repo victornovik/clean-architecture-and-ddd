@@ -14,7 +14,7 @@ services:
       - clean_architecture.db
 
   clean_architecture.db:
-    image: postgres:18.3
+    image: postgres:13.2
     container_name: clean_architecture_db
     environment:
       - POSTGRES_DB=webinar
