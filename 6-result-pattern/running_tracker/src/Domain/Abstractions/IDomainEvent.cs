@@ -1,5 +1,3 @@
 ﻿namespace Domain.Abstractions;
 
-public interface IDomainEvent
-{
-}
+public interface IDomainEvent;

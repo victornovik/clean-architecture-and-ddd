@@ -4,8 +4,7 @@ namespace Domain.Users;
 
 public sealed class User : Entity
 {
-    private User(Guid id, Email email, Name name, bool hasPublicProfile)
-        : base(id)
+    private User(Guid id, Email email, Name name, bool hasPublicProfile) : base(id)
     {
         Email = email;
         Name = name;
