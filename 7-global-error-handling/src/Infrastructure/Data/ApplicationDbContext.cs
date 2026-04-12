@@ -6,16 +6,9 @@ using SharedKernel;
 
 namespace Infrastructure.Data;
 
-internal sealed class ApplicationDbContext : DbContext, IApplicationDbContext, IUnitOfWork
+internal sealed class ApplicationDbContext(DbContextOptions options, IPublisher publisher)
+    : DbContext(options), IApplicationDbContext, IUnitOfWork
 {
-    private readonly IPublisher _publisher;
-
-    public ApplicationDbContext(DbContextOptions options, IPublisher publisher)
-        : base(options)
-    {
-        _publisher = publisher;
-    }
-
     public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,7 +43,7 @@ internal sealed class ApplicationDbContext : DbContext, IApplicationDbContext, I
 
         foreach (IDomainEvent domainEvent in domainEvents)
         {
-            await _publisher.Publish(domainEvent);
+            await publisher.Publish(domainEvent);
         }
     }
 }

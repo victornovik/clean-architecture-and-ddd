@@ -1,5 +1,3 @@
 ﻿namespace SharedKernel;
 
-public interface IDomainEvent
-{
-}
+public interface IDomainEvent;

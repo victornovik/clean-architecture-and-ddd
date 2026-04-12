@@ -5,17 +5,9 @@ using SharedKernel;
 
 namespace Application.Users.Create;
 
-internal sealed class CreateUserCommandHandler : ICommandHandler<CreateUserCommand, Guid>
+internal sealed class CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    : ICommandHandler<CreateUserCommand, Guid>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public CreateUserCommandHandler(IUserRepository userRepository, IUnitOfWork unitOfWork)
-    {
-        _userRepository = userRepository;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Result<Guid>> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
         Result<Email> emailResult = Email.Create(command.Email);
@@ -25,7 +17,7 @@ internal sealed class CreateUserCommandHandler : ICommandHandler<CreateUserComma
         }
 
         Email email = emailResult.Value;
-        if (!await _userRepository.IsEmailUniqueAsync(email))
+        if (!await userRepository.IsEmailUniqueAsync(email))
         {
             return Result.Failure<Guid>(UserErrors.EmailNotUnique);
         }
@@ -33,9 +25,9 @@ internal sealed class CreateUserCommandHandler : ICommandHandler<CreateUserComma
         var name = new Name(command.Name);
         var user = User.Create(email, name, command.HasPublicProfile);
 
-        _userRepository.Insert(user);
+        userRepository.Insert(user);
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return user.Id;
     }

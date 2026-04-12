@@ -7,18 +7,12 @@ using SharedKernel;
 
 namespace Application.Users.GetById;
 
-internal sealed class GetUserByEmailQueryHandler : IQueryHandler<GetUserByEmailQuery, UserResponse>
+internal sealed class GetUserByEmailQueryHandler(IDbConnectionFactory dbConnectionFactory)
+    : IQueryHandler<GetUserByEmailQuery, UserResponse>
 {
-    private readonly IDbConnectionFactory _dbConnectionFactory;
-
-    public GetUserByEmailQueryHandler(IDbConnectionFactory dbConnectionFactory)
-    {
-        _dbConnectionFactory = dbConnectionFactory;
-    }
-
     public async Task<Result<UserResponse>> Handle(GetUserByEmailQuery query, CancellationToken cancellationToken)
     {
-        using IDbConnection connection = _dbConnectionFactory.CreateOpenConnection();
+        using IDbConnection connection = dbConnectionFactory.CreateOpenConnection();
 
         const string sql =
             """

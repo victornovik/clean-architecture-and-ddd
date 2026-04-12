@@ -8,11 +8,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddApplication().AddInfrastructure(builder.Configuration);
 
-builder.Services
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
-
+// Since ASP.NET 8.0
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -26,6 +24,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Till ASP.NET 8.0
+//app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Since ASP.NET 8.0
 app.UseExceptionHandler();
 
 app.MapUserEndpoints();

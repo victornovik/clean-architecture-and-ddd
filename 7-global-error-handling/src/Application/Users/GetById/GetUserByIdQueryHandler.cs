@@ -6,18 +6,12 @@ using SharedKernel;
 
 namespace Application.Users.GetById;
 
-internal sealed class GetUserByIdQueryHandler : IQueryHandler<GetUserByIdQuery, UserResponse>
+internal sealed class GetUserByIdQueryHandler(IApplicationDbContext dbContext)
+    : IQueryHandler<GetUserByIdQuery, UserResponse>
 {
-    private readonly IApplicationDbContext _dbContext;
-
-    public GetUserByIdQueryHandler(IApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
-
     public async Task<Result<UserResponse>> Handle(GetUserByIdQuery query, CancellationToken cancellationToken)
     {
-        UserResponse? user = await _dbContext.Users
+        UserResponse? user = await dbContext.Users
             .AsNoTracking()
             .Where(u => u.Id == query.UserId)
             .Select(u => new UserResponse

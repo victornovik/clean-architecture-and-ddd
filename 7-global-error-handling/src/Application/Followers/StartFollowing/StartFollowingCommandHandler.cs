@@ -6,37 +6,27 @@ using SharedKernel;
 
 namespace Application.Followers.StartFollowing;
 
-internal sealed class StartFollowingCommandHandler : ICommandHandler<StartFollowingCommand>
+internal sealed class StartFollowingCommandHandler(
+    IUserRepository userRepository,
+    IFollowerService followerService,
+    IUnitOfWork unitOfWork)
+    : ICommandHandler<StartFollowingCommand>
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IFollowerService _followerService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public StartFollowingCommandHandler(
-        IUserRepository userRepository,
-        IFollowerService followerService,
-        IUnitOfWork unitOfWork)
-    {
-        _userRepository = userRepository;
-        _followerService = followerService;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Result> Handle(StartFollowingCommand command, CancellationToken cancellationToken)
     {
-        User? user = await _userRepository.GetByIdAsync(command.UserId, cancellationToken);
+        User? user = await userRepository.GetByIdAsync(command.UserId, cancellationToken);
         if (user is null)
         {
             return UserErrors.NotFound(command.UserId);
         }
 
-        User? followed = await _userRepository.GetByIdAsync(command.FollowedId, cancellationToken);
+        User? followed = await userRepository.GetByIdAsync(command.FollowedId, cancellationToken);
         if (followed is null)
         {
             return UserErrors.NotFound(command.FollowedId);
         }
 
-        Result result = await _followerService.StartFollowingAsync(
+        Result result = await followerService.StartFollowingAsync(
             user,
             followed,
             cancellationToken);
@@ -46,7 +36,7 @@ internal sealed class StartFollowingCommandHandler : ICommandHandler<StartFollow
             return result.Error;
         }
 
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
     }
