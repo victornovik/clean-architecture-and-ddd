@@ -12,7 +12,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+    {
+        // MS SQL Server requires the "UseSqlServer" to be used in order to map the entities to the correct table and column names
+        options.UseSqlServer(builder.Configuration.GetConnectionString("Database"));
+
+        // PostgreSQL requires the "UseSnakeCaseNamingConvention" to be used in order to map the entities to the correct table and column names
+        //options.UseNpgsql(builder.Configuration.GetConnectionString("Database"));
+        //options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    });
 
 builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -51,7 +58,7 @@ app.MapPut("api/products/{productId}", async (Guid productId, UpdateProductReque
 
 app.MapDelete("api/products/{productId}", async (Guid productId, ISender sender) =>
 {
-    await sender.Send(new DeleteProduct.Command{ Id = productId });
+    await sender.Send(new DeleteProduct.Command { Id = productId });
 
     return Results.NoContent();
 });
@@ -60,4 +67,4 @@ app.UseHttpsRedirection();
 
 app.Run();
 
-public partial class Program { }
+public partial class Program;

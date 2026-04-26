@@ -7,12 +7,16 @@ public class ProductTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
     [Fact]
     public async Task Create_ShouldCreateProduct()
     {
+        const decimal PRICE = 99.9m;
+        const string NAME = "Intel Pentium";
+        const string CATEGORY = "Hardware";
+
         // Arrange
         var command = new CreateProduct.Command
         {
-            Name = "Test",
-            Category = "Test category",
-            Price = 100.0m
+            Name = NAME,
+            Category = CATEGORY,
+            Price = PRICE
         };
 
         // Act
@@ -22,9 +26,9 @@ public class ProductTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
         var product = DbContext.Products.FirstOrDefault(p => p.Id == productId);
 
         Assert.NotNull(product);
-        Assert.Equal("Test", product.Name);
-        Assert.Equal("Test category", product.Category);
-        Assert.Equal(100.0m, product.Price);
+        Assert.Equal(NAME, product.Name);
+        Assert.Equal(CATEGORY, product.Category);
+        Assert.Equal(PRICE, product.Price);
     }
 
     [Fact]
@@ -39,10 +43,11 @@ public class ProductTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
 
         // Assert
         Assert.NotNull(productResponse);
+        Assert.Equal(productId, productResponse.Id);
     }
 
     [Fact]
-    public async Task Get_ShouldThrow_WhenProductIsNull()
+    public async Task Get_ShouldThrow_WhenQueryNonExistingProduct()
     {
         // Arrange
         var query = new GetProduct.Query { Id = Guid.NewGuid() };
@@ -57,20 +62,29 @@ public class ProductTests(IntegrationTestWebAppFactory factory) : BaseIntegratio
     [Fact]
     public async Task Update_ShouldUpdateProduct_WhenProductExists()
     {
+        const decimal PRICE = 55.5m;
+        const string NAME = "Fridge";
+        const string CATEGORY = "Utilities";
+
         // Arrange
         var productId = await CreateProduct();
         var command = new UpdateProduct.Command
         {
             Id = productId,
-            Name = "Test",
-            Category = "Test category",
-            Price = 100.0m
+            Name = NAME,
+            Category = CATEGORY,
+            Price = PRICE
         };
 
         // Act
         await Sender.Send(command);
 
         // Assert
+        var product = DbContext.Products.FirstOrDefault(p => p.Id == productId);
+        Assert.NotNull(product);
+        Assert.Equal(NAME, product.Name);
+        Assert.Equal(CATEGORY, product.Category);
+        Assert.Equal(PRICE, product.Price);
     }
 
     [Fact]

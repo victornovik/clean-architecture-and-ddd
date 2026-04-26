@@ -9,6 +9,19 @@ services:
       dockerfile: Products.Api/Dockerfile
 
   products-db:
+    # PostgreSQL section
+    # image: postgres:latest
+    # container_name: eshop-db
+    # environment:
+    #     POSTGRES_DB: eshop
+    #     POSTGRES_USER: postgres
+    #     POSTGRES_PASSWORD: "postgres"
+    # volumes:
+    #     - ./.containers/database:/var/lib/postgresql/data
+    # ports:
+    #     - "5432:5432"
+
+    # MS SQL Server section
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: Products.Db
     volumes:
